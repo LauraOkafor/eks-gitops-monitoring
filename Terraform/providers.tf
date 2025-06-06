@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.11"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
 
   }
   required_version = ">= 1.3.0"
@@ -29,6 +33,10 @@ provider "helm" {
   kubernetes {
     config_path = "~/.kube/config"
   }
+}
+
+provider "kubectl" {
+  config_path = "~/.kube/config"
 }
 
 resource "helm_release" "flux_helm_controller" {

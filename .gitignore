@@ -1,0 +1,42 @@
+# Terraform state and config
+*.tfstate
+*.tfstate.backup
+.terraform/
+crash.log
+override.tf
+override.tf.json
+terraform.tfvars
+*.tfvars
+Terraform/postgresql-values.yaml
+
+# Helm secrets and chart overrides
+helm-charts/backend/values.yaml
+helm-charts/postgresql/values.secret.yaml
+helm-charts/backend/values.prod.yaml
+helm-charts/postgresql/values.yaml
+*.tgz
+
+
+# Kubernetes secret manifests
+*.secret.yaml
+secrets.yaml
+argocd-secret.yaml
+
+# Local config and environment files
+.env
+.env.*
+*.kubeconfig
+.kube/
+
+# Helm release metadata
+helm-release.yaml
+
+# Docker (optional)
+*.env
+docker-compose.override.yml
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.swp
+.DS_Store

@@ -59,8 +59,8 @@ module "eks" {
   subnet_ids = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
 
   eks_managed_node_groups = {
-    # Node group for application workloads
-    devops_nodes = {
+    # Single node group for all workloads
+    default_nodes = {
       instance_types = ["t3.medium"]
       desired_size   = 2
       min_size       = 1
@@ -69,6 +69,13 @@ module "eks" {
       # Add IAM policies for EBS
       iam_role_additional_policies = {
         AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
+      
+      # Increase creation timeout
+      timeouts = {
+        create = "30m"
+        update = "30m"
+        delete = "30m"
       }
     }
     

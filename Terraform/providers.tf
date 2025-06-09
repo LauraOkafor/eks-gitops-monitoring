@@ -26,25 +26,47 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+  }
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+    }
   }
 }
 
 provider "kubectl" {
-  config_path = "~/.kube/config"
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", var.cluster_name]
+  }
 }
 
-resource "helm_release" "flux_helm_controller" {
-  name       = "helm-controller"
-  namespace  = "flux-system"
-  repository = "https://fluxcd-community.github.io/helm-charts"
-  chart      = "helm-controller"
-  version    = "0.37.0" # Use latest stable
+resource "null_resource" "install_flux" {
+  depends_on = [null_resource.update_kubeconfig, time_sleep.wait_after_kubeconfig]
 
-  create_namespace = true
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -sL https://github.com/fluxcd/flux2/releases/latest/download/install.yaml -o flux-install.yaml
+      kubectl apply -f flux-install.yaml
+      rm flux-install.yaml
+    EOT
+  }
 }

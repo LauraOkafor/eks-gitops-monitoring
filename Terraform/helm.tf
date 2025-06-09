@@ -10,18 +10,21 @@ resource "null_resource" "ensure_namespace" {
 # Wait for the EKS cluster to be fully ready
 resource "time_sleep" "wait_for_cluster" {
   depends_on      = [module.eks]
-  create_duration = "90s"
+  create_duration = "180s" # Increased from 90s to 180s
 }
 
 resource "helm_release" "monitoring" {
-  name       = "monitoring"
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "kube-prometheus-stack"
-  namespace  = "monitoring"
-  version    = "58.3.0"
-  timeout    = 600
+  name          = "monitoring"
+  repository    = "https://prometheus-community.github.io/helm-charts"
+  chart         = "kube-prometheus-stack"
+  namespace     = "monitoring"
+  version       = "58.3.0"
+  timeout       = 2400 # Increased to 40 minutes
+  atomic        = false
+  wait          = true
+  wait_for_jobs = false
 
-  depends_on = [null_resource.ensure_namespace, time_sleep.wait_for_cluster]
+  depends_on = [null_resource.ensure_namespace, time_sleep.wait_for_cluster, null_resource.update_kubeconfig, time_sleep.wait_after_kubeconfig]
 }
 
 resource "helm_release" "postgresql" {
@@ -81,20 +84,47 @@ resource "helm_release" "frontend" {
   depends_on = [helm_release.backend, null_resource.ensure_namespace]
 }
 
+resource "null_resource" "update_kubeconfig" {
+  depends_on = [module.eks, time_sleep.wait_for_cluster]
+
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+  }
+}
+
+# Additional wait after kubeconfig is updated
+resource "time_sleep" "wait_after_kubeconfig" {
+  depends_on      = [null_resource.update_kubeconfig]
+  create_duration = "30s"
+}
+
 resource "helm_release" "argocd" {
   name             = "argocd"
-  namespace        = "argocd"
-  create_namespace = true
+  namespace        = "monitoring"
+  create_namespace = false
 
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   version    = "5.51.6"
+
+  depends_on = [null_resource.update_kubeconfig, time_sleep.wait_after_kubeconfig]
 }
 
-resource "helm_release" "flux_source_controller" {
-  name       = "source-controller"
-  namespace  = "flux-system"
-  repository = "https://fluxcd-community.github.io/helm-charts"
-  chart      = "source-controller"
-  version    = "0.41.2" # Use latest stable
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  namespace  = "kube-system"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  version    = "3.11.0"
+
+  set {
+    name  = "args"
+    value = "{--kubelet-insecure-tls}"
+  }
+
+  set {
+    name  = "hostNetwork"
+    value = "true"
+  }
 }
+

@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: backend
-  namespace: default
+  namespace: monitoring
 spec:
   chart:
     spec:
@@ -10,8 +10,8 @@ spec:
       sourceRef:
         kind: GitRepository
         name: taskflow-repo
-        namespace: argocd
+        namespace: monitoring
   values:
     image:
-      repository: lauraokafor/backend
-      tag: latest
+      repository: lauraokafor/fullstack
+      tag: backend

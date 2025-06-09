@@ -4,29 +4,10 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "cidr_block" {
-  type    = string
-  default = "10.10.0.0/16"
-}
-
-variable "vpc_name" {
-  type    = string
-  default = "eks-vpc"
-}
-
-variable "tags" {
-  type = map(string)
-  default = {
-    terraform  = "true"
-    kubernetes = "eks-cluster"
-  }
-  description = "Tags to apply to all resources"
-}
-
 variable "cluster_name" {
-  type    = string
-  default = "eks-cluster"
-
+  type        = string
+  default     = "eks-cluster"
+  description = "EKS cluster name"
 }
 
 variable "eks_version" {
@@ -35,9 +16,29 @@ variable "eks_version" {
   description = "EKS version"
 }
 
-variable "postgresql_password" {
+variable "cidr_block" {
   type        = string
-  sensitive   = true
-  description = "PostgreSQL password"
-  default     = null # Will be prompted if not set
+  default     = "10.10.0.0/16"
+  description = "CIDR block for the VPC"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {
+    Name = "eks-cluster-vpc"
+  }
+  description = "Tags for AWS resources"
+}
+
+# GitHub variables for Flux
+variable "github_owner" {
+  type        = string
+  description = "GitHub owner/organization for Flux repository"
+  default     = "your-github-username"
+}
+
+variable "github_repository" {
+  type        = string
+  description = "GitHub repository name for Flux"
+  default     = "eks-gitops-monitoring"
 }

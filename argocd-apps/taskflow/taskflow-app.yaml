@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/LauraOkafor/eks-gitops-monitoring.git
     targetRevision: main
-    path: argocd-apps/taskflow/base
+    path: argocd-apps/taskflow/dev
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

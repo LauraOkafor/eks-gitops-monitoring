@@ -56,11 +56,13 @@ Node.js API (backend)
 ⇅
 PostgreSQL Database
 
-📷 **[Architecture Diagram Here – taskflow-architecture.png]**
+📷 Architecture Diagram Here 
+![eks-gitops-arch Large](https://github.com/user-attachments/assets/834d64ec-d18d-437d-9548-d24c692a5eb9)
+
 
 ---
 
-## 🗓️ Project Timeline (June 1 – June 7)
+## 🗓️ Project outcome
 
 |     | Focus Area                             | Outcome                                               |
 |-----|----------------------------------------|--------------------------------------------------------|

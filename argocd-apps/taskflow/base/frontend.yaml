@@ -4,6 +4,7 @@ metadata:
   name: frontend
   namespace: monitoring
 spec:
+  interval: 5m 
   chart:
     spec:
       chart: ./helm-charts/frontend

@@ -42,4 +42,4 @@ docker-compose.override.yml
 .DS_Store
 
 #argocd 
-argocd-apps/taskflow/base/database.yaml
+# argocd-apps/taskflow/base/database.yaml

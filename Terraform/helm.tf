@@ -79,9 +79,12 @@ resource "helm_release" "frontend" {
   name      = "frontend"
   chart     = "../helm-charts/frontend"
   namespace = "monitoring"
-  timeout   = 600
+  timeout   = 1800
+  atomic    = false
+  wait      = false
+  wait_for_jobs = false
 
-  depends_on = [helm_release.backend, null_resource.ensure_namespace]
+  depends_on = [helm_release.backend, null_resource.ensure_namespace, null_resource.update_kubeconfig, time_sleep.wait_after_kubeconfig]
 }
 
 resource "null_resource" "update_kubeconfig" {
@@ -116,15 +119,21 @@ resource "helm_release" "metrics_server" {
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
   chart      = "metrics-server"
   version    = "3.11.0"
+  timeout    = 1800
+  atomic     = false
+  wait       = false
+  wait_for_jobs = false
 
   set {
-    name  = "args"
-    value = "{--kubelet-insecure-tls}"
+    name  = "args[0]"
+    value = "--kubelet-insecure-tls"
   }
 
   set {
-    name  = "hostNetwork"
+    name  = "hostNetwork.enabled"
     value = "true"
   }
+  
+  depends_on = [null_resource.update_kubeconfig, time_sleep.wait_after_kubeconfig]
 }
 

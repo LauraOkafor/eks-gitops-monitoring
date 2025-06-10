@@ -1,0 +1,47 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: database
+  namespace: monitoring
+spec:
+  chart:
+    spec:
+      chart: postgresql
+      version: 13.2.27
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system  # or wherever you have your HelmRepository
+  interval: 15m
+  values:
+    # PostgreSQL configuration
+    auth:
+      enablePostgresUser: true
+      postgresPassword: "12345"  
+      username: "admin"                  
+      password: "12345"              
+      database: "recipe"            
+    
+    # Persistence configuration
+    primary:
+      persistence:
+        enabled: true
+        size: 8Gi
+        storageClass: "ebs-sc"  
+    
+    # Service configuration
+    service:
+      type: ClusterIP
+      ports:
+        postgresql: 5432
+
+---
+# You'll also need a HelmRepository resource
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: flux-system  # Common namespace for Flux resources
+spec:
+  interval: 1h
+  url: https://charts.bitnami.com/bitnami

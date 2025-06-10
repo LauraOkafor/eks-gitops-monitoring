@@ -17,9 +17,9 @@ spec:
     # PostgreSQL configuration
     auth:
       enablePostgresUser: true
-      postgresPassword: MTIzNDU=  
+      postgresPassword: <your password> 
       username: "admin"                  
-      password: MTIzNDU=          
+      password: <your password>          
       database: "recipe"            
     
     # Persistence configuration

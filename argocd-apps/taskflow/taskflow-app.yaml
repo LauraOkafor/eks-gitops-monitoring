@@ -1,20 +1,25 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
 metadata:
   name: taskflow
   namespace: monitoring
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/LauraOkafor/eks-gitops-monitoring.git
-    targetRevision: main
-    path: argocd-apps/taskflow/base
-  destination:
-    server: https://kubernetes.default.svc
+  interval: 1m
+  path: ./argocd-apps/taskflow/base
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: taskflow-repo
     namespace: monitoring
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-    - CreateNamespace=true
+  targetNamespace: monitoring
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: taskflow-repo
+  namespace: monitoring
+spec:
+  interval: 1m
+  url: https://github.com/LauraOkafor/eks-gitops-monitoring.git
+  ref:
+    branch: main

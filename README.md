@@ -13,7 +13,7 @@
 - Application monitoring with **Prometheus & Grafana**
 - Secure access control via **RBAC** and **NetworkPolicies**
 - Auto-scaling with **HPA** and **metrics-server**
-- Deployment of a full-stack microservice app (**React + Node.js + PostgreSQL**)
+- Deployment of a full-stack microservice app (**React + Django + PostgreSQL**)
 
 The platform is built with **production readiness** in mind and provides a blueprint for scalable, observable, and secure application delivery on Kubernetes.
 
@@ -41,7 +41,7 @@ The platform is built with **production readiness** in mind and provides a bluep
 | Monitoring          | Prometheus, Grafana, kube-state-metrics  |
 | Logging             | CloudWatch (optionally Loki/EFK)         |
 | CI/CD               | GitHub, Git triggers, Argo auto-sync     |
-| App Stack           | React (frontend), Node.js (backend), PostgreSQL |
+| App Stack           | React (frontend), Django (backend), PostgreSQL |
 | Security            | Kubernetes RBAC, Network Policies         |
 | Scaling             | HPA, metrics-server                       |
 
@@ -52,7 +52,7 @@ The platform is built with **production readiness** in mind and provides a bluep
 The infrastructure and services are split into distinct namespaces with RBAC and NetworkPolicy controls.
 Users ⇄ LoadBalancer (frontend) ⇄ React App
 ⇅
-Node.js API (backend)
+Django API (backend)
 ⇅
 PostgreSQL Database
 
